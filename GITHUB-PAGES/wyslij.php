@@ -63,21 +63,29 @@ function wymiar($v) {
     return ($n >= 10 && $n <= 900) ? $n : 0;
 }
 
-$o_opis = tablica('okno_opis');
-$o_szer = tablica('okno_szer');
-$o_wys  = tablica('okno_wys');
+$o_opis  = tablica('okno_opis');
+$o_typ   = tablica('okno_typ');
+$o_kolor = tablica('okno_kolor');
+$o_szer  = tablica('okno_szer');
+$o_wys   = tablica('okno_wys');
 
 $okna  = [];
-$ile   = min(max(count($o_opis), count($o_szer), count($o_wys)), 20);
+$ile   = min(max(count($o_opis), count($o_typ), count($o_szer), count($o_wys)), 20);
 for ($i = 0; $i < $ile; $i++) {
-    $opisO = mb_substr(str_replace(["\r", "\n"], ' ', trim((string) ($o_opis[$i] ?? ''))), 0, 60);
-    $sz    = wymiar($o_szer[$i] ?? '');
-    $wy    = wymiar($o_wys[$i] ?? '');
-    if ($opisO === '' && !$sz && !$wy) {
+    $opisO  = mb_substr(str_replace(["\r", "\n"], ' ', trim((string) ($o_opis[$i] ?? ''))), 0, 60);
+    $typO   = mb_substr(str_replace(["\r", "\n"], ' ', trim((string) ($o_typ[$i] ?? ''))), 0, 60);
+    $kolorO = trim((string) ($o_kolor[$i] ?? ''));
+    $kolorO = in_array($kolorO, ['Jednokolorowy', 'Drewnopodobny'], true) ? $kolorO : '';
+    $sz     = wymiar($o_szer[$i] ?? '');
+    $wy     = wymiar($o_wys[$i] ?? '');
+    if ($opisO === '' && $typO === '' && $kolorO === '' && !$sz && !$wy) {
         continue;                                  // pusty wiersz - pomijamy
     }
     $wymiary = ($sz && $wy) ? "$sz x $wy cm" : (($sz || $wy) ? ($sz ? "szer. $sz cm" : "wys. $wy cm") : 'wymiary nie podane');
-    $okna[]  = ($opisO !== '' ? $opisO : 'okno ' . ($i + 1)) . ': ' . $wymiary;
+    $okna[]  = ($opisO !== '' ? $opisO : 'okno ' . ($i + 1))
+        . ' | ' . ($typO !== '' ? $typO : 'rodzaj nie wskazany')
+        . ' | ' . $wymiary
+        . ($kolorO !== '' ? ' | osprzęt ' . mb_strtolower($kolorO) : '');
 }
 
 $opis     = mb_substr(trim((string) ($_POST['opis'] ?? '')), 0, 2000);
@@ -106,7 +114,8 @@ $tresc .= "Miejscowość     : " . ($miasto !== '' ? $miasto : 'nie podano') . "
 $tresc .= "Rodzaj budynku  : $budynek\n";
 $tresc .= "Interesuje go   : " . ($produkty ? implode(', ', $produkty) : 'nie wskazano') . "\n\n";
 if ($okna) {
-    $tresc .= 'Okna (' . count($okna) . "), wymiary podane przez klienta:\n";
+    $tresc .= 'Okna (' . count($okna) . "), opisane przez klienta:\n";
+    $tresc .= "  pomieszczenie | rodzaj osłony | wymiary | kolor osprzętu\n";
     foreach ($okna as $nr => $w) {
         $tresc .= '  ' . ($nr + 1) . '. ' . $w . "\n";
     }
