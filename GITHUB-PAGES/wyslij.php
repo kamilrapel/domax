@@ -81,7 +81,17 @@ for ($i = 0; $i < $ile; $i++) {
     if ($opisO === '' && $typO === '' && $kolorO === '' && !$sz && !$wy) {
         continue;                                  // pusty wiersz - pomijamy
     }
-    $wymiary = ($sz && $wy) ? "$sz x $wy cm" : (($sz || $wy) ? ($sz ? "szer. $sz cm" : "wys. $wy cm") : 'wymiary nie podane');
+    // Karnisz ma jeden wymiar - długość. Reszta osłon: szerokość x wysokość.
+    $karnisz = (mb_stripos($typO, 'karnisz') !== false);
+    if ($karnisz) {
+        $wymiary = $sz ? "długość $sz cm" : 'długość nie podana';
+    } elseif ($sz && $wy) {
+        $wymiary = "$sz x $wy cm";
+    } elseif ($sz || $wy) {
+        $wymiary = $sz ? "szer. $sz cm" : "wys. $wy cm";
+    } else {
+        $wymiary = 'wymiary nie podane';
+    }
     $okna[]  = ($opisO !== '' ? $opisO : 'okno ' . ($i + 1))
         . ' | ' . ($typO !== '' ? $typO : 'rodzaj nie wskazany')
         . ' | ' . $wymiary
