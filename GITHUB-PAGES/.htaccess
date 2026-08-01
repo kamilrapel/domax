@@ -59,3 +59,18 @@
 </IfModule>
 
 ErrorDocument 404 /404.html
+
+# ------------------------------------------------------------
+# Ochrona pliku z awaryjnym zapisem zgłoszeń.
+# Powstaje tylko wtedy, gdy nie uda się wysłać maila, i zawiera dane osobowe -
+# nikt nie może go pobrać, wpisując adres w przeglądarce.
+# ------------------------------------------------------------
+<FilesMatch "(^|/)(domax-)?zgloszenia-awaryjne\.(php|txt|log)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

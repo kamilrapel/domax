@@ -154,9 +154,39 @@ $wyslano = @mail(
     '-f' . $NADAWCA
 );
 
+/**
+ * Zapis awaryjny - używany tylko wtedy, gdy poczta odmówi współpracy,
+ * żeby żadne zgłoszenie nie przepadło.
+ *
+ * UWAGA: ten plik zawiera dane osobowe klientów, więc NIE MOŻE być możliwy
+ * do pobrania z przeglądarki. Zabezpieczamy go na trzy sposoby:
+ *  1. najpierw próbujemy katalogu POWYŻEJ katalogu strony - tam serwer WWW nie sięga,
+ *  2. jeśli się nie da, zapisujemy plik z rozszerzeniem .php, którego pierwsza linia
+ *     natychmiast kończy działanie i zwraca 404 - po wpisaniu adresu nie widać nic,
+ *  3. dodatkowo blokuje go reguła w pliku .htaccess.
+ */
+function zapis_awaryjny($tresc) {
+    $naglowek = "<?php http_response_code(404); exit; ?>\n";
+    $miejsca  = [
+        dirname(__DIR__) . '/domax-zgloszenia-awaryjne.php',   // poza katalogiem strony
+        __DIR__ . '/zgloszenia-awaryjne.php',                  // ostatnia deska ratunku
+    ];
+    foreach ($miejsca as $sciezka) {
+        $nowy = !file_exists($sciezka);
+        if ($nowy && !is_writable(dirname($sciezka))) {
+            continue;
+        }
+        $dane = ($nowy ? $naglowek : '') . $tresc . "\n\n";
+        if (@file_put_contents($sciezka, $dane, FILE_APPEND | LOCK_EX) !== false) {
+            @chmod($sciezka, 0600);                            // czyta tylko właściciel
+            return true;
+        }
+    }
+    return false;
+}
+
 if (!$wyslano) {
-    // zapis awaryjny, żeby żadne zgłoszenie nie przepadło
-    @file_put_contents(__DIR__ . '/zgloszenia-awaryjne.txt', $tresc . "\n\n", FILE_APPEND | LOCK_EX);
+    zapis_awaryjny($tresc);
     odpowiedz(false, 'Nie udało się wysłać wiadomości. Zadzwoń: 690 120 170.', 500);
 }
 
