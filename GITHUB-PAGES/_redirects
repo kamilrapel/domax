@@ -1,0 +1,21 @@
+# Mapa przekierowań 301 ze starej strony (WordPress/Divi) na nową strukturę.
+# Format Netlify/Cloudflare Pages. Odpowiednik dla Apache znajduje się w pliku
+# public/.htaccess - na serwerze użyj tego, który pasuje do hostingu.
+
+/oferta/rolety-materialowe          /oferta/rolety-materialowe/            301
+/oferta/rolety-dzien-noc-wadowice   /oferta/rolety-dzien-noc/              301
+/oferta/rolety-rzymskie-wadowice    /oferta/rolety-rzymskie/               301
+/oferta/rolety-dachowe-wadowice     /oferta/rolety-dachowe/                301
+/oferta/rolety-zewnetrzne-wadowice  /oferta/rolety-zewnetrzne/             301
+/oferta/plisy-wadowice              /oferta/plisy/                         301
+/oferta/zaluzje-poziome-wadowice    /oferta/zaluzje-poziome/               301
+/oferta/zaluzje-pionowe-wadowice    /oferta/zaluzje-pionowe/               301
+/oferta/zaluzje-drewniane-wadowice  /oferta/zaluzje-drewniane/             301
+/oferta/moskitiery-wadowice         /oferta/moskitiery/                    301
+/oferta/markizy-wadowice            /oferta/markizy/                       301
+/oferta/karnisze-wadowice           /oferta/karnisze/                      301
+/oferta/folie-okienne-przeciwsloneczne-wadowice  /oferta/folie-okienne/    301
+/kontakt-domax-wadowice             /kontakt/                              301
+
+# stare adresy załączników WordPressa - do usunięcia z indeksu
+/?attachment_id=*                   /                                      301
