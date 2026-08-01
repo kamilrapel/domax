@@ -1,0 +1,61 @@
+# ============================================================
+# DOMAX - konfiguracja Apache dla nowej strony statycznej
+# 1) wymuszenie HTTPS + www→bez www
+# 2) przekierowania 301 ze starych adresów
+# 3) kompresja i cache
+# ============================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- HTTPS ---
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # --- bez www ---
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+  # --- stare adresy oferty ---
+  RewriteRule ^oferta/rolety-dzien-noc-wadowice/?$        /oferta/rolety-dzien-noc/ [R=301,L]
+  RewriteRule ^oferta/rolety-rzymskie-wadowice/?$         /oferta/rolety-rzymskie/ [R=301,L]
+  RewriteRule ^oferta/rolety-dachowe-wadowice/?$          /oferta/rolety-dachowe/ [R=301,L]
+  RewriteRule ^oferta/rolety-zewnetrzne-wadowice/?$       /oferta/rolety-zewnetrzne/ [R=301,L]
+  RewriteRule ^oferta/plisy-wadowice/?$                   /oferta/plisy/ [R=301,L]
+  RewriteRule ^oferta/zaluzje-poziome-wadowice/?$         /oferta/zaluzje-poziome/ [R=301,L]
+  RewriteRule ^oferta/zaluzje-pionowe-wadowice/?$         /oferta/zaluzje-pionowe/ [R=301,L]
+  RewriteRule ^oferta/zaluzje-drewniane-wadowice/?$       /oferta/zaluzje-drewniane/ [R=301,L]
+  RewriteRule ^oferta/moskitiery-wadowice/?$              /oferta/moskitiery/ [R=301,L]
+  RewriteRule ^oferta/markizy-wadowice/?$                 /oferta/markizy/ [R=301,L]
+  RewriteRule ^oferta/karnisze-wadowice/?$                /oferta/karnisze/ [R=301,L]
+  RewriteRule ^oferta/folie-okienne-przeciwsloneczne-wadowice/?$ /oferta/ [R=301,L]
+  RewriteRule ^oferta/folie-okienne/?$                     /oferta/ [R=301,L]
+  RewriteRule ^cennik/?$                                  /oferta/ [R=301,L]
+  RewriteRule ^kontakt-domax-wadowice/?$                  /kontakt/ [R=301,L]
+
+  # --- strony załączników WordPressa ---
+  RewriteCond %{QUERY_STRING} attachment_id=
+  RewriteRule ^$ / [R=301,L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 1 year"
+  ExpiresByType application/javascript  "access plus 1 year"
+  ExpiresByType image/webp              "access plus 1 year"
+  ExpiresByType image/jpeg              "access plus 1 year"
+  ExpiresByType image/png               "access plus 1 year"
+  ExpiresByType image/svg+xml           "access plus 1 year"
+  ExpiresByType text/html               "access plus 1 hour"
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+ErrorDocument 404 /404.html
